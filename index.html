@@ -19,9 +19,15 @@ function generate_table(rows, cols) {
       class_name = "cell" + (i * rows + j);
       if (i == Math.floor(rows/2) && j == Math.floor(cols/2)) {
         class_name += " hole";
-        tags.push("<td class='" + class_name + "'><div id='results'>&nbsp;</div></td>");
+        tags.push(
+            "<td class='" + class_name + "'>"
+          + "<div id='results'>&nbsp;</div>" 
+          + "</td>");
       } else {
-        tags.push("<td class='" + class_name + "'><div>&nbsp;</div></td>");
+        tags.push(
+            "<td class='" + class_name + "'>"
+          + "<div>&nbsp;</div>" 
+          + "</td>");
       }
     }
     tags.push("</tr>");
@@ -31,15 +37,17 @@ function generate_table(rows, cols) {
 }
 
 $(document).ready(function() {
-  var rows = cols = 3, max = rows * cols, n = 3, history = [];
+  var rows = cols = 3, max = rows * cols - 1, history = [], n = 3;
 
   function new_position() {
-    var r = Math.floor(Math.random() * (max-1));
+    var r = Math.floor(Math.random() * max);
     if (r >= (cols * Math.floor(rows/2) + Math.floor(rows/2))) r+=1;
     history.push(r);
     $('#results').html("");
     $('table td div.current').removeClass('current');
-    $('table td.cell' + r + ' div').addClass('current-bang').delay(500).queue(function(next) {
+    $('table td.cell' + r + ' div')
+      .addClass('current-bang')
+      .delay(500).queue(function(next) {
         $(this).removeClass('current-bang');
         $(this).addClass('current');
         next();
@@ -60,10 +68,9 @@ $(document).ready(function() {
     }
   }
 
-  $('body #wrapper').append("<h2><i>n</i> = " + (n) + "</h2>");
+  $('body #wrapper').append("<h2><i>n</i> = " + n + "</h2>");
   $('body #wrapper').append(generate_table(rows, cols));
   $('input#yes-button').bind('click', check_answer)
-  $('body').append("");
   new_position();
 });
 </script>
