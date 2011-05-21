@@ -1,0 +1,74 @@
+<html><head><script src="jquery-1.6.1.js" type="text/javascript"></script>
+<style>
+  body {margin:0 auto; width:300px; padding-top:100px; background:#eee;}
+  table {border:4px solid #c00; border-right:0; border-bottom:0;}
+  table td div {background:#fff; padding:20px; border:4px solid #c00; border-left:0; border-top:0; width:50px; height:50px;}
+  table td.hole div {background:#eee;}
+  .current {background:#a00;}
+  .current-bang {background:#fff;}
+  input[type='button'] {padding:10px 20px; margin:20px 0;}
+  #results {text-transform:uppercase; text-align:center; font-weight:bold;}
+</style>
+<script>
+function generate_table(rows, cols) {
+  tags = [];
+  tags.push("<table cellpadding='0' cellspacing='0'>");
+  for (var i=0; i<rows; i++) {
+    tags.push("<tr>");
+    for (var j=0; j<cols; j++) {
+      class_name = "cell" + (i * rows + j);
+      if (i == Math.floor(rows/2) && j == Math.floor(cols/2)) {
+        class_name += " hole";
+        tags.push("<td class='" + class_name + "'><div id='results'>&nbsp;</div></td>");
+      } else {
+        tags.push("<td class='" + class_name + "'><div>&nbsp;</div></td>");
+      }
+    }
+    tags.push("</tr>");
+  }
+  tags.push("</table>");
+  return tags.join(" ");
+}
+
+$(document).ready(function() {
+  var rows = cols = 3, max = rows * cols, n = 3, history = [];
+
+  function new_position() {
+    var r = Math.floor(Math.random() * (max-1));
+    if (r >= (cols * Math.floor(rows/2) + Math.floor(rows/2))) r+=1;
+    history.push(r);
+    $('#results').html("");
+    $('table td div.current').removeClass('current');
+    $('table td.cell' + r + ' div').addClass('current-bang').delay(500).queue(function(next) {
+        $(this).removeClass('current-bang');
+        $(this).addClass('current');
+        next();
+    });
+    setTimeout(new_position, 3000);
+  }
+
+  function check_answer() {
+    l = history.length;
+    current = history[l-1];
+    $('#results').html("<h3>No</h3>");
+    for (var i=l-1-n; i<l-1; i++) {
+      if (i < 0) continue;
+      if (current == history[i]) {
+        $('#results').html("<h3>Yes</h3>");
+        break;
+      }
+    }
+  }
+
+  $('body #wrapper').append("<h2><i>n</i> = " + (n) + "</h2>");
+  $('body #wrapper').append(generate_table(rows, cols));
+  $('input#yes-button').bind('click', check_answer)
+  $('body').append("");
+  new_position();
+});
+</script>
+</head>
+<body>
+  <h1><i>n</i>-back</h1>
+  <div id="wrapper"></div>
+  <input id="yes-button" type="button" value="Show" />
